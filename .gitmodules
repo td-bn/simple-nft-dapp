@@ -1,3 +1,6 @@
 [submodule "nft-backend"]
 	path = nft-backend
 	url = git@github.com:td-bn/nft-backend.git
+[submodule "frontend"]
+	path = frontend
+	url = git@github.com:td-bn/nft-frontend.git
