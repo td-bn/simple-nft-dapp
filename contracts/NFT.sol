@@ -18,6 +18,14 @@ contract AnimalNFT is ERC721 {
         nextTokenId++;
     }
 
+    function buy(uint _tokenId) public {
+        address owner = ERC721.ownerOf(_tokenId);
+
+        require(msg.sender != owner, 'sending to owner');
+        require(getApproved(_tokenId) == address(this), 'contract not approved to perform transaction');
+        _safeTransfer(owner, msg.sender, _tokenId, "");
+    }
+
     function _baseURI() internal pure override returns (string memory) {
         return "https://lossy-nft-server.herokuapp.com/";
     }

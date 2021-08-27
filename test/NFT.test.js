@@ -2,10 +2,10 @@ const { expect } = require("chai")
 
 describe('NFTs', () => {
   let nft
-  let admin, alice
+  let admin, alice, bob
 
   beforeEach(async () => {
-    [admin, alice] = await ethers.getSigners()
+    [admin, alice, bob] = await ethers.getSigners()
     const NFT = await ethers.getContractFactory("AnimalNFT")
     nft = await NFT.connect(admin).deploy()
   })
@@ -43,6 +43,25 @@ describe('NFTs', () => {
       const URI = await nft.tokenURI(0)
       expect(URI).to.equal('https://lossy-nft-server.herokuapp.com/0')
     })
+  })
+
+  describe('buying', () => {
+    it('should pass ownership of NFT', async () => {
+      await nft.connect(admin).mint(alice.address) 
+      await nft.connect(alice).approve(nft.address, 0)
+      
+      nft.connect(bob).buy(0)
+      const owner = await nft.ownerOf(0)
+      expect(owner).to.equal(bob.address)
+    })
+    it('should pass not pass ownership of NFT if contract not approved for sale', async () => {
+      await nft.connect(admin).mint(alice.address) 
+      // await nft.connect(alice).approve(nft.address, 0)
+      
+      await expect(nft.connect(bob).buy(0))
+        .to.be.revertedWith('contract not approved to perform transaction')
+    })
     
   })
+  
 })
