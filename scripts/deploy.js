@@ -21,12 +21,9 @@ async function main() {
 
   console.log("Contract address:", nft.address);
 
-  await nft.mint(deployer.address);
-  await nft.mint(deployer.address);
-  await nft.mint(deployer.address);
+  for(let i=0; i<4; i++)
+    await nft.mint(deployer.address);
 
-  await nft.approve(nft.address, 0)
-  await nft.approve(nft.address, 1)
   saveFrontendFiles(nft);
 }
 
