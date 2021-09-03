@@ -2,20 +2,33 @@
 
 pragma solidity ^0.8.6;
 
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
-contract AnimalNFT is ERC721 {
+contract INFT is ERC721URIStorage {
     uint public nextTokenId;
     address public admin;
 
-    constructor() ERC721('AnimalNFT', 'ANFT') {
+    event Mint(uint tokenId, address to, string tokenURI);
+    event Buy( uint tokenId, address buyer);
+    event Approve(uint tokenId, address approved);
+
+    constructor() ERC721('IdenticonNFT', 'INFT') {
         admin = msg.sender;
     }
 
-    function mint(address to) external {
-        require(msg.sender == admin, 'only admin');
-        _safeMint(to, nextTokenId);
+    function mint(address _to, string memory _tokenURI) external {
+        _safeMint(_to, nextTokenId);
+        _setTokenURI(nextTokenId, _tokenURI);
+
+        emit Mint(nextTokenId, _to, _tokenURI);
+
         nextTokenId++;
+    }
+
+    function approve(address to, uint256 tokenId) public virtual override {
+        ERC721.approve(to, tokenId);
+        emit Approve(tokenId, to);
     }
 
     function buy(uint _tokenId) public {
@@ -23,10 +36,9 @@ contract AnimalNFT is ERC721 {
 
         require(msg.sender != owner, 'sending to owner');
         require(getApproved(_tokenId) == address(this), 'contract not approved to perform transaction');
-        _safeTransfer(owner, msg.sender, _tokenId, "");
-    }
 
-    function _baseURI() internal pure override returns (string memory) {
-        return "https://lossy-nft-server.herokuapp.com/";
+        _safeTransfer(owner, msg.sender, _tokenId, "");
+
+        emit Buy(_tokenId, msg.sender);
     }
 }

@@ -15,14 +15,11 @@ async function main() {
 
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
-  const NFT = await ethers.getContractFactory("AnimalNFT");
+  const NFT = await ethers.getContractFactory("INFT");
   const nft = await NFT.deploy();
   await nft.deployed();
 
   console.log("Contract address:", nft.address);
-
-  for(let i=0; i<4; i++)
-    await nft.mint(deployer.address);
 
   saveFrontendFiles(nft);
 }
@@ -40,10 +37,10 @@ function saveFrontendFiles(contract) {
     JSON.stringify({ AnimalNFT: contract.address }, undefined, 2)
   );
 
-  const TokenArtifact = artifacts.readArtifactSync("AnimalNFT");
+  const TokenArtifact = artifacts.readArtifactSync("INFT");
 
   fs.writeFileSync(
-    contractsDir + "/AnimalNFT.json",
+    contractsDir + "/INFT.json",
     JSON.stringify(TokenArtifact, null, 2)
   );
 }
